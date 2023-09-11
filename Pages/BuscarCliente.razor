@@ -1,0 +1,77 @@
+﻿@page "/BuscarCliente"
+@using Registro_de_Clientes.BLL
+@inject ClienteBLL clientesbll
+
+
+<h3>Buscar Cliente</h3>
+
+<div class="input-group mb-3">
+    <input type="number" @bind="ClientesId" class="form-control" placeholder="Ingrese ID de Cliente">
+    <div class="input-group-append">
+        <button @onclick="BuscarId" class="btn btn-outline-secondary">Buscar por ID</button>
+        <button @onclick="BuscarTodo" class="btn btn-outline-secondary">Mostrar todos</button>
+    </div>
+</div>
+
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>ID de Cliente</th>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Celular</th>
+            <th>RNC</th>
+            <th>Email</th>
+            <th>Dirección</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cliente in clientes)
+        {
+            <tr>
+                <td>@cliente.ClientesId</td>
+                <td>@cliente.Nombre</td>
+                <td>@cliente.Telefono</td>
+                <td>@cliente.Celular</td>
+                <td>@cliente.Rnc</td>
+                <td>@cliente.Gmail</td>
+                <td>@cliente.Direccion</td>
+                <td>
+                    <button @onclick="() => EliminarCliente(cliente.ClientesId)" class="btn btn-danger btn-sm">Eliminar</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private List<Clientes> clientes = new List<Clientes>();
+
+    private void EliminarCliente(int clienteId)
+    {
+        var clienteAEliminar = clientes.FirstOrDefault(c => c.ClientesId == clienteId);
+
+        if (clienteAEliminar != null)
+        {
+            clientes.Remove(clienteAEliminar);
+        }
+    }
+
+
+    [Parameter]
+    public int ClientesId { get; set; }
+
+    private void BuscarTodo()
+    {
+
+        this.clientes = clientesbll.GetList(c => true);
+    }
+
+    private void BuscarId()
+    {
+
+        this.clientes = clientesbll.BuscarPorId(ClientesId);
+    }
+
+}

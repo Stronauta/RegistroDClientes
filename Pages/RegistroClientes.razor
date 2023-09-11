@@ -1,0 +1,125 @@
+﻿@page "/Clientes"
+@page "/Clientes/{ClientesId:int}"
+@page "/RegistroClientes"
+@using Registro_de_Clientes.BLL;
+@inject ClienteBLL clientesbll
+
+
+<EditForm Model="Clientes" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="ClientesId">ID de Cliente:</label>
+        <div class="input-group">
+            <InputNumber @bind-Value="Clientes.ClientesId" class="form-control" id="ClienteId" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="Nombres">Nombre:</label>
+        <InputText @bind-Value="Clientes.Nombre" class="form-control" id="Nombres" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Telefono">Teléfono:</label>
+        <InputText @bind-Value="Clientes.Telefono" class="form-control" id="Telefono" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Celular">Celular:</label>
+        <InputText @bind-Value="Clientes.Celular" class="form-control" id="Celular" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Rnc">RNC:</label>
+        <InputText @bind-Value="Clientes.Rnc" class="form-control" id="Rnc" required/>
+    </div>
+
+    <div class="form-group">
+        <label for="Gmail">Email:</label>
+        <InputText @bind-Value="Clientes.Gmail" class="form-control" id="Gmail" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Direccion">Dirección:</label>
+        <InputTextArea @bind-Value="Clientes.Direccion" class="form-control" id="Direccion" rows="3" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+<p>@Mensaje</p>
+
+
+@code {
+
+    [Parameter]
+
+    public int ClientesId { get; set; }
+
+
+    private string Mensaje = ""; // para mostrar un mensaje 
+
+    private List<Clientes> clientes = new List<Clientes>();
+    private Clientes Clientes = new Clientes();
+
+
+    protected override void OnInitialized()
+    {
+        if (ClientesId > 0)
+        {
+            this.Clientes.ClientesId = ClientesId;
+            this.Buscar();
+        }
+    }
+
+    void Buscar()
+    {
+
+        var prioridadEncontrada = clientesbll.Buscar(Clientes.ClientesId);
+        Mensaje = string.Empty;
+        if (prioridadEncontrada != null)
+        {
+            this.Clientes = prioridadEncontrada;
+
+        }
+        else
+        {
+            this.Clientes = new Clientes();
+
+            Mensaje = "No se encontro el cliente";
+        }
+    }
+
+    void Nuevo()
+    {
+        this.Clientes = new Clientes();
+    }
+
+    void Guardar()
+    {
+        Mensaje = string.Empty;
+        if (Clientes.ClientesId < 0)
+        {
+            Mensaje = "No pudo guardar el cliente";
+            return;
+        }
+        if (clientesbll.Guardar(this.Clientes))
+        {
+            Mensaje = "Se ha guardado correctamente el cliente";
+            this.Clientes = new Clientes();
+        }
+    }
+
+    void Eliminar()
+    {
+        Mensaje = string.Empty;
+        if (clientesbll.Eliminar(Clientes))
+            Mensaje = "El cliente ha sido eliminado";
+        else
+            Mensaje = "No se pudo eliminar el cliente";
+        this.Clientes = new Clientes();
+
+    }
+
+}
